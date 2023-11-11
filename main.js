@@ -1,12 +1,13 @@
 const Gameboard = (function(){
-    let board = ['','','','','Y','','','Y',''];
+    let board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
 
     const placeMarker = function(marker){
-        console.log(marker);
         let index;
+        //Checking that index is in range and unoccupied
         do {
             index = +prompt('Where to put your marker');
-        }while(!([0,1,2,3,4,5,6,7,8].includes(index)));
+        }while(![0,1,2,3,4,5,6,7,8].includes(index) || board[index]!==' ');
+
         board[index] = marker;
     }
 
@@ -14,7 +15,7 @@ const Gameboard = (function(){
         console.log(' ',board[0],' | ',board[1],' | ',board[2],' | ',);
         console.log(' ',board[3],' | ',board[4],' | ',board[5],' | ',);
         console.log(' ',board[6],' | ',board[7],' | ',board[8],' | ',);
-    }
+    }                                                                                                                              
 
     const winCheck = function(marker){
         const winCombinatinons = [
@@ -31,30 +32,56 @@ const Gameboard = (function(){
         }
         return false;
     }
-    return {placeMarker,printBoard,winCheck};
+
+    const isFull = function(){
+        return (!board.includes(' '));
+    }
+
+    return {placeMarker,printBoard,winCheck,isFull};
 })();
 
 
-const Player = function(marker){
-    return {marker};
+const Player = function(name,marker){
+    return {name,marker};
 }
 
+
 const Game = (function(){
-    const player1 = Player('X');
-    const player2 = Player('Y');
+    const player1 = Player('PLayer1','X');
+    const player2 = Player('Player2','Y');
     const players = [player1,player2]
     
     let currentPlayer = null;
 
-    //randomly assing 1st turn to player 1 or 2
+    //randomly assigning 1st turn to player 1 or 2
     const assignTurn = function(){
-        console.log(players);
-        currentPlayer = players[Math.round(Math.random())];
+        return players[Math.round(Math.random())];
     }
 
     const switchTurn = function(){
         currentPlayer = currentPlayer===players[0]?players[1]:players[0];
     }
 
-    return {}
+    const playRound = function(){
+        let win = false;
+        currentPlayer = assignTurn();
+        console.log(`${currentPlayer.name} goes first`);
+        Gameboard.printBoard();
+        while (!Gameboard.isFull()){
+            Gameboard.placeMarker(currentPlayer.marker);
+            Gameboard.printBoard();
+            if (Gameboard.winCheck(currentPlayer.marker)){
+                win = true;
+                console.log(`${currentPlayer.name} has won!`);
+                break;
+            }
+            switchTurn();
+        }
+        if (!win){
+            console.log('This round ends in a draw!');
+        }
+    }
+
+    return {playRound}
 })();
+Game.playRound();
