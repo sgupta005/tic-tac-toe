@@ -1,6 +1,7 @@
 const Gameboard = (function(){
-    let board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+    let board = ['X ','X','Y',' ',' ',' ',' ',' ',' '];
 
+    const getBoard = ()=>board;
     const placeMarker = function(marker){
         let index;
         //Checking that index is in range and unoccupied
@@ -37,9 +38,8 @@ const Gameboard = (function(){
         return (!board.includes(' '));
     }
 
-    return {placeMarker,printBoard,winCheck,isFull};
+    return {getBoard,placeMarker,printBoard,winCheck,isFull};
 })();
-
 
 const Player = function(name,marker){
     return {name,marker};
@@ -84,4 +84,33 @@ const Game = (function(){
 
     return {playRound}
 })();
-Game.playRound();
+// Game.playRound();
+
+const displayController = (function(){
+    
+    const renderBoard = function(board){
+
+        const gridContainer = document.querySelector('.grid-container');
+        //Clearing gridContent before rendering board
+        gridContainer.textContent='';
+
+        for (let item of board){
+            const gridItem = document.createElement('div');
+            const gridButton = document.createElement('button');
+            const markerText = document.createElement('h1');
+
+            gridItem.classList.add('grid-item');
+            markerText.classList.add('marker-text');
+
+            markerText.textContent = item;
+
+            gridButton.appendChild(markerText);
+            gridItem.appendChild(gridButton);
+            gridContainer.appendChild(gridItem);
+        }
+        
+    }
+
+    return {renderBoard}
+})();
+
