@@ -1,7 +1,7 @@
 const Gameboard = (function(){
-    let board = ['X ','X','Y',' ',' ',' ',' ',' ',' '];
-
+    let board = ['','','','','','','','',''];
     const getBoard = ()=>board;
+
     const placeMarker = function(marker){
         let index;
         //Checking that index is in range and unoccupied
@@ -10,6 +10,10 @@ const Gameboard = (function(){
         }while(![0,1,2,3,4,5,6,7,8].includes(index) || board[index]!==' ');
 
         board[index] = marker;
+    }
+
+    const updateBoard = function(index,marker){
+        board[index]=marker;
     }
 
     const printBoard = function(){
@@ -38,7 +42,7 @@ const Gameboard = (function(){
         return (!board.includes(' '));
     }
 
-    return {getBoard,placeMarker,printBoard,winCheck,isFull};
+    return {getBoard,updateBoard,placeMarker,printBoard,winCheck,isFull};
 })();
 
 const Player = function(name,marker){
@@ -87,22 +91,22 @@ const Game = (function(){
 // Game.playRound();
 
 const displayController = (function(){
-    
-    const renderBoard = function(board){
+    const gridContainer = document.querySelector('.grid-container');
 
-        const gridContainer = document.querySelector('.grid-container');
+    const renderBoard = function(board=Gameboard.getBoard()){
         //Clearing gridContent before rendering board
         gridContainer.textContent='';
 
-        for (let item of board){
+        for (let i=0;i<board.length;i++){
             const gridItem = document.createElement('div');
             const gridButton = document.createElement('button');
             const markerText = document.createElement('h1');
 
             gridItem.classList.add('grid-item');
+            gridItem.id = i;
             markerText.classList.add('marker-text');
 
-            markerText.textContent = item;
+            markerText.textContent = board[i];
 
             gridButton.appendChild(markerText);
             gridItem.appendChild(gridButton);
@@ -111,6 +115,31 @@ const displayController = (function(){
         
     }
 
-    return {renderBoard}
-})();
+    const placeMarker = function(marker) {
+        // Add the event listener to each grid item
+        for (let gridItem of gridContainer.children) {
+            gridItem.addEventListener('click', gridItemClickHandler);
+        }
+        function gridItemClickHandler(event) {
+            if (!event.target.textContent) {
+                //index of the board array where the marker is to be inserted
+                const index = +event.target.parentNode.id;
+                Gameboard.updateBoard(index, marker);
+                event.target.firstChild.textContent = marker;
+                console.log(Gameboard.getBoard());
 
+                /*Looping through each gridItem and removing event listener 
+                from it so that user can place their marker in only one cell
+                at a give time */
+                for (let item of event.target.parentNode.parentNode.children){
+                    item.removeEventListener('click', gridItemClickHandler);
+                }
+            }
+        }
+        
+    }
+
+    return {renderBoard,placeMarker}
+})();
+displayController.renderBoard()
+displayController.placeMarker('X'); 
