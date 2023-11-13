@@ -55,12 +55,13 @@ const Game = (function(){
     const player2 = Player('Player2','Y');
     const players = [player1,player2]
     
-    let currentPlayer = null;
-
     //randomly assigning 1st turn to player 1 or 2
-    const assignTurn = function(){
-        return players[Math.round(Math.random())];
-    }
+    let currentPlayer = players[Math.round(Math.random())];
+    const getCurrentPlayer = ()=>currentPlayer;
+
+    // const assignTurn = function(){
+    //     return players[Math.round(Math.random())];
+    // }
 
     const switchTurn = function(){
         currentPlayer = currentPlayer===players[0]?players[1]:players[0];
@@ -86,7 +87,7 @@ const Game = (function(){
         }
     }
 
-    return {playRound}
+    return {getCurrentPlayer,playRound}
 })();
 // Game.playRound();
 
@@ -136,10 +137,15 @@ const displayController = (function(){
                 }
             }
         }
-        
     }
 
-    return {renderBoard,placeMarker}
+    const displayPlayerTurn = function(currentPlayer = Game.getCurrentPlayer()){
+        const playerTurn = document.querySelector('.player-turn');
+        playerTurn.textContent = `Player ${currentPlayer.marker}'s turn`;
+    }
+
+    return {displayPlayerTurn,renderBoard,placeMarker}
 })();
 displayController.renderBoard()
-displayController.placeMarker('X'); 
+displayController.displayPlayerTurn();
+// displayController.placeMarker('X'); 
