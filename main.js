@@ -26,12 +26,31 @@ const Gameboard = (function(){
         return (!board.includes(''));
     }
 
-    return {getBoard,updateBoard,placeMarker,printBoard,winCheck,isFull};
+    return {getBoard,updateBoard,winCheck,isFull};
 })();
 
 const Player = function(name,marker){
     return {name,marker};
 }
+
+const Game = (function(){
+    const player1 = Player('PLayer1','X');
+    const player2 = Player('Player2','Y');
+    const players = [player1,player2]
+    
+    //randomly assigning 1st turn to player 1 or 2
+    let currentPlayer = players[Math.round(Math.random())];
+
+    const getCurrentPlayer = function(){
+        return currentPlayer;
+    }
+    
+    const switchTurn = function(){
+        currentPlayer = currentPlayer===players[0]?players[1]:players[0];
+    }
+    
+    return {getCurrentPlayer,switchTurn}
+})();
 
 const displayController = (function(){
     const gridContainer = document.querySelector('.grid-container');
@@ -58,25 +77,38 @@ const displayController = (function(){
         
     }
 
-    const placeMarker = function(marker) {
+    const playGame = function() {
+        displayCurrentPlayer(Game.getCurrentPlayer());
+
         // Add the event listener to each grid item
         for (let gridItem of gridContainer.children) {
             gridItem.addEventListener('click', gridItemClickHandler);
         }
+
         function gridItemClickHandler(event) {
+            let currentPlayer = Game.getCurrentPlayer();
+            let marker = Game.getCurrentPlayer().marker;
+
             if (!event.target.textContent) {
                 //index of the board array where the marker is to be inserted
                 const index = +event.target.parentNode.id;
                 Gameboard.updateBoard(index, marker);
                 event.target.firstChild.textContent = marker;
-                console.log(Gameboard.getBoard());
-
-                /*Looping through each gridItem and removing event listener 
-                from it so that user can place their marker in only one cell
-                at a give time */
-                for (let item of event.target.parentNode.parentNode.children){
-                    item.removeEventListener('click', gridItemClickHandler);
+                
+                if (Gameboard.winCheck(marker)){
+                    displayWinner(currentPlayer);
+                    //Remove the event listeners so that user cannot place markers after winning
+                    for (let gridItem of gridContainer.children) {
+                        gridItem.removeEventListener('click', gridItemClickHandler);
+                    }
+                    return;
                 }
+                if (Gameboard.isFull()){
+                    displayDrawMessage();
+                    return;
+                }
+                Game.switchTurn();
+                displayCurrentPlayer(Game.getCurrentPlayer());
             }
         }
     }
@@ -94,29 +126,8 @@ const displayController = (function(){
         displayBox.textContent = 'This game ends in a draw!';
     }
 
-    return {renderBoard,placeMarker,displayCurrentPlayer,displayWinner,displayDrawMessage}
+    return {renderBoard,playGame,displayCurrentPlayer,displayWinner,displayDrawMessage}
 })();
 
-const Game = (function(){
-    const player1 = Player('PLayer1','X');
-    const player2 = Player('Player2','Y');
-    const players = [player1,player2]
-    
-    //randomly assigning 1st turn to player 1 or 2
-    let currentPlayer = players[Math.round(Math.random())];
-    
-    const switchTurn = function(){
-        currentPlayer = currentPlayer===players[0]?players[1]:players[0];
-    }
-
-    const playRound = function(){
-        
-    }
-
-    return {playRound}
-})();
-// Game.playRound();
-
-// displayController.renderBoard()
-// displayController.displayPlayerTurn();
-// displayController.placeMarker('X'); 
+displayController.renderBoard();
+displayController.playGame();
