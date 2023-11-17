@@ -80,6 +80,7 @@ const displayController = (function(){
     }
 
     const playGame = function() {
+        renderBoard();
         displayCurrentPlayer(Game.getCurrentPlayer());
 
         // Add the event listener to each grid item
@@ -118,7 +119,6 @@ const displayController = (function(){
         restartButton.addEventListener('click', ()=>{
             Gameboard.reset();
             Game.reset();
-            renderBoard();
             playGame();
         })
     }
@@ -136,8 +136,7 @@ const displayController = (function(){
         displayBox.textContent = 'This game ends in a draw!';
     }
 
-    return {renderBoard,playGame,displayCurrentPlayer,displayWinner,displayDrawMessage}
+    return {playGame}
 })();
 
-displayController.renderBoard();
 displayController.playGame();
