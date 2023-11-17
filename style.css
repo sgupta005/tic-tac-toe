@@ -41,7 +41,7 @@ body{
     width: 100%;
 }
 
-.player-turn{
+.display-box{
     margin: 25px 0px;
     color: #46494B;
     font-family: 'Varela Round', sans-serif;
