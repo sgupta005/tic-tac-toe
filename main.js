@@ -2,6 +2,8 @@ const Gameboard = (function(){
     let board = ['','','','','','','','',''];
     const getBoard = ()=>board;
 
+    const reset = ()=>board = ['','','','','','','','','']; 
+
     const updateBoard = function(index,marker){
         board[index]=marker;
     }
@@ -26,7 +28,7 @@ const Gameboard = (function(){
         return (!board.includes(''));
     }
 
-    return {getBoard,updateBoard,winCheck,isFull};
+    return {getBoard,reset,updateBoard,winCheck,isFull};
 })();
 
 const Player = function(name,marker){
@@ -35,21 +37,21 @@ const Player = function(name,marker){
 
 const Game = (function(){
     const player1 = Player('PLayer1','X');
-    const player2 = Player('Player2','Y');
+    const player2 = Player('Player2','O');
     const players = [player1,player2]
     
     //randomly assigning 1st turn to player 1 or 2
-    let currentPlayer = players[Math.round(Math.random())];
+    let currentPlayer = players[0];
 
-    const getCurrentPlayer = function(){
-        return currentPlayer;
-    }
+    const getCurrentPlayer = ()=>currentPlayer;
+
+    const reset = ()=> currentPlayer = players[0];
     
     const switchTurn = function(){
         currentPlayer = currentPlayer===players[0]?players[1]:players[0];
     }
     
-    return {getCurrentPlayer,switchTurn}
+    return {getCurrentPlayer,reset,switchTurn};
 })();
 
 const displayController = (function(){
@@ -62,7 +64,7 @@ const displayController = (function(){
         for (let i=0;i<board.length;i++){
             const gridItem = document.createElement('div');
             const gridButton = document.createElement('button');
-            const markerText = document.createElement('h1');
+            const markerText = document.createElement('div');
 
             gridItem.classList.add('grid-item');
             gridItem.id = i;
@@ -111,6 +113,14 @@ const displayController = (function(){
                 displayCurrentPlayer(Game.getCurrentPlayer());
             }
         }
+
+        const restartButton = document.querySelector('.restart');
+        restartButton.addEventListener('click', ()=>{
+            Gameboard.reset();
+            Game.reset();
+            renderBoard();
+            playGame();
+        })
     }
 
     //This single div is being used to display both player turn and winner

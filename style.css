@@ -36,6 +36,12 @@ body{
     min-width: 150px;
     flex:1;
 }
+.marker-text{
+    color: #46494B;
+    font-size: 100px;
+    font-family: 'Varela Round', sans-serif;
+}
+
 .grid-item button{
     height: 100%;
     width: 100%;
@@ -46,4 +52,15 @@ body{
     color: #46494B;
     font-family: 'Varela Round', sans-serif;
     font-size: 40px;
+}
+.restart{
+    font-family: 'Varela Round', sans-serif;
+    margin-top: 25px;
+    border-radius: 5px;
+    border: 3px solid black;
+    font-size: 50px;
+    background-color: #4c5c68;
+    color: #b0e4db;
+    height: 80px;
+    width: 230px;
 }
